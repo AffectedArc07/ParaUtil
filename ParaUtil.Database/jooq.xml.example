@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration xmlns="http://www.jooq.org/xsd/jooq-codegen-3.14.0.xsd">
+    <jdbc>
+        <driver>com.mysql.cj.jdbc.Driver</driver>
+        <url>jdbc:mysql://10.0.0.10:3306/paradise_mc</url>
+        <user>username_here</user>
+        <password>password_here</password>
+    </jdbc>
+
+    <generator>
+        <name>org.jooq.codegen.JavaGenerator</name>
+
+        <database>
+            <name>org.jooq.meta.mysql.MySQLDatabase</name>
+            <inputSchema>paradise_mc</inputSchema>
+            <includes>.*</includes>
+        </database>
+
+        <target>
+            <packageName>me.aa07.parautil.database</packageName>
+            <directory>src</directory>
+        </target>
+    </generator>
+</configuration>
