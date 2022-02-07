@@ -34,3 +34,12 @@ jobs:
 
       - name: Build with Maven
         run: mvn package
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        if: ${{ env.BRANCH_NAME == "master" }}
+        with:
+          name: Compiled Jars
+          path: |
+            out/ParaUtil.Bungee.jar
+            out/ParaUtil.Spigot.jar
