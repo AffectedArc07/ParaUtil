@@ -22,11 +22,15 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Install Dependencies
-        env:
-          MVN_USER: ${{ secrets.mvnuser }}
-          MVN_PASS: ${{ secrets.mvnpass }}
-        run: mvn -Drepo.id=aa07_parautil_read -Drepo.login=$MVN_USER -Drepo.pwd=$MVN_PASS dependency:resolve
+      - name: Setup Settings
+        uses: s4u/maven-settings-action@v2.3.0
+        with:
+          servers: |
+            [{
+                "id": "aa07_parautil_read",
+                "username": " ${{ secrets.mvnuser }}",
+                "password": " ${{ secrets.mvnpass }}"
+            }]
 
       - name: Build with Maven
         run: mvn package
