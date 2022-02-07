@@ -2,6 +2,7 @@ package me.aa07.parautil.spigot.permissions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import me.aa07.parautil.spigot.ParaUtilSpigot;
 import me.aa07.parautil.spigot.configuration.ConfigurationManager;
@@ -10,7 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 
@@ -18,6 +19,7 @@ public class PermissionsManager implements Listener {
     private ParaUtilSpigot plugin;
     private PermissionsConfig config;
     private HashMap<Player, PermissionAttachment> attachments;
+    private HashSet<Player> admins;
 
     public PermissionsManager(ParaUtilSpigot plugin, ConfigurationManager config) {
         this.plugin = plugin;
@@ -25,31 +27,51 @@ public class PermissionsManager implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
 
         attachments = new HashMap<Player, PermissionAttachment>();
+        admins = new HashSet<Player>();
 
         // ADD ALL PERMISSIONS THIS PLUGIN USES
-        Bukkit.getPluginManager().addPermission(new Permission("parautil.admin")); // Permission for /parautil mc2ckey & such
+        // Use this if you ever add commands to this plugin
+        // Bukkit.getPluginManager().addPermission(new Permission("parautil.admin"));
 
         plugin.getLogger().info("[PermissionsManager] Loaded");
     }
 
+    // Called from LoginMananger
     public void grantAdminPermissions(Player player) {
+        admins.add(player);
+        refreshPermissions(player);
+    }
+
+    // Called from the reload command
+    public void refreshAll() {
+        for (Player player : admins) {
+            refreshPermissions(player);
+        }
+    }
+
+    public void refreshPermissions(Player player) {
+        PermissionAttachment pa = attachments.get(player);
+        // Remove all old
+        for (String perm : pa.getPermissions().keySet()) {
+            pa.unsetPermission(perm);
+        }
+
+        // Add new
         for (String config_perm : config.adminPermissions) {
             List<String> perms = calculatePermissions(config_perm);
-            PermissionAttachment pa = attachments.get(player);
             for (String perm : perms) {
                 pa.setPermission(perm, true);
             }
         }
     }
 
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        PermissionAttachment pa = event.getPlayer().addAttachment(plugin);
-        attachments.put(event.getPlayer(), pa);
+    public void addAttachment(Player player) {
+        PermissionAttachment pa = player.addAttachment(plugin);
+        attachments.put(player, pa);
     }
 
     @EventHandler
-    public void onPlayerLeave(PlayerJoinEvent event) {
+    public void onPlayerQuit(PlayerQuitEvent event) {
         attachments.remove(event.getPlayer());
     }
 
@@ -82,5 +104,9 @@ public class PermissionsManager implements Listener {
         output.add(perm);
 
         return output;
+    }
+
+    public boolean isAdmin(Player player) {
+        return admins.contains(player);
     }
 }

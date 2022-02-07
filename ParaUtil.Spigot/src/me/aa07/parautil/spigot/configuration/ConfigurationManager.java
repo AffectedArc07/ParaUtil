@@ -44,7 +44,6 @@ public class ConfigurationManager {
         plugin.getConfig().addDefault("database.db", "paradise_mc");
 
         // Defaults for permissions
-        plugin.getConfig().addDefault("permissions.admingroupid", 11);
         plugin.getConfig().addDefault("permissions.grantednodes", new String[]{"plugin.permissions.*"});
 
         // Defaults for the web API
@@ -58,7 +57,7 @@ public class ConfigurationManager {
 
     // In its own method so it can be reloaded without the entire server being restarted
     // Modded servers can take upwards of 5+ minutes to start
-    private void loadConfig() {
+    public void loadConfig() {
         // Load general
         generalConfiguration.devmode = plugin.getConfig().getBoolean("general.devmode");
 
@@ -70,7 +69,6 @@ public class ConfigurationManager {
         databaseConfiguration.db = plugin.getConfig().getString("database.db");
 
         // Load permissions
-        permissionsConfig.adminGroupId = plugin.getConfig().getInt("permissions.admingroupid");
         permissionsConfig.adminPermissions = plugin.getConfig().getStringList("permissionslist.grantednodes");
 
         // Load web
