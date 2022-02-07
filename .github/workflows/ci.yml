@@ -37,7 +37,7 @@ jobs:
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
-        if: ${{ env.BRANCH_NAME == "master" }}
+        if: ${{ env.BRANCH_NAME == 'master' }}
         with:
           name: Compiled Jars
           path: |
