@@ -2,8 +2,8 @@ package me.aa07.parautil.spigot;
 
 import me.aa07.parautil.spigot.commands.ParaUtilCommand;
 import me.aa07.parautil.spigot.configuration.ConfigurationManager;
-import me.aa07.parautil.spigot.configuration.discord.DiscordManager;
 import me.aa07.parautil.spigot.database.DatabaseManager;
+import me.aa07.parautil.spigot.discord.DiscordManager;
 import me.aa07.parautil.spigot.login.LoginManager;
 import me.aa07.parautil.spigot.permissions.PermissionsManager;
 import me.aa07.parautil.spigot.ping.PingManager;

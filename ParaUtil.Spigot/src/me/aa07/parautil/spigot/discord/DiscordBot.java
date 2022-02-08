@@ -1,4 +1,4 @@
-package me.aa07.parautil.spigot.configuration.discord;
+package me.aa07.parautil.spigot.discord;
 
 import me.aa07.parautil.spigot.ParaUtilSpigot;
 import me.aa07.parautil.spigot.configuration.sections.DiscordConfiguration;

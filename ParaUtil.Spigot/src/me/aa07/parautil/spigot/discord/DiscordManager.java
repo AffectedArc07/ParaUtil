@@ -1,4 +1,4 @@
-package me.aa07.parautil.spigot.configuration.discord;
+package me.aa07.parautil.spigot.discord;
 
 import com.google.gson.Gson;
 import java.io.BufferedReader;
