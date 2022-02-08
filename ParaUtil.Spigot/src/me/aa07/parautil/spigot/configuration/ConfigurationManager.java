@@ -69,7 +69,8 @@ public class ConfigurationManager {
         databaseConfiguration.db = plugin.getConfig().getString("database.db");
 
         // Load permissions
-        permissionsConfig.adminPermissions = plugin.getConfig().getStringList("permissionslist.grantednodes");
+        permissionsConfig.adminPermissions = plugin.getConfig().getStringList("permissions.grantednodes");
+        plugin.getLogger().info(String.format("[ConfigurationManager] Loaded %s permissions from config", permissionsConfig.adminPermissions.size()));
 
         // Load web
         webConfiguration.apiHost = plugin.getConfig().getString("web.apihost");

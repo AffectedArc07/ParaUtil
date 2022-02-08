@@ -101,6 +101,8 @@ public class ParaUtilCommand implements CommandExecutor, TabCompleter {
     }
 
     private void handleLookup(CommandSender sender, String target) {
+        // This can take a bit, so inform them
+        sender.sendMessage(F.pri("Searching..."));
         // See if they exist
         if (!db.jooq().fetchExists(db.jooq().selectFrom(Tables.PLAYERS).where(Tables.PLAYERS.LAST_USERNAME.eq(target)))) {
             sender.sendMessage(F.pri("Player " + F.item(target) + " has not joined the server."));
@@ -122,16 +124,30 @@ public class ParaUtilCommand implements CommandExecutor, TabCompleter {
 
     }
 
-    // Provide tab completion on lookups
+    // Provide tab completion logic
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command cmd, String string, String[] args) {
-        if (cmd.getName().equalsIgnoreCase("parautil") && args.length > 1 && args[0].equals("lookup")) {
-            List<String> list = new ArrayList<String>();
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                list.add(p.getName());
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+        if (args.length > 0) {
+            if (args.length == 1) {
+                List<String> list = new ArrayList<String>();
+                list.add("lookup");
+                list.add("reload");
+                list.add("version");
+                return list;
             }
-            return list;
+
+            if (args.length == 2) {
+                if (args[0].equals("lookup") && args[1].equals("")) {
+                    List<String> list = new ArrayList<String>();
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        list.add(p.getName());
+                    }
+                    return list;
+                }
+            }
+
         }
-        return null;
+
+        return new ArrayList<String>(); // Provide nothing
     }
 }

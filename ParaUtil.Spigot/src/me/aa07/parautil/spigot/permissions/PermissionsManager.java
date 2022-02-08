@@ -48,7 +48,7 @@ public class PermissionsManager implements Listener {
         }
     }
 
-    public void refreshPermissions(Player player) {
+    private void refreshPermissions(Player player) {
         PermissionAttachment pa = attachments.get(player);
         // Remove all old
         for (String perm : pa.getPermissions().keySet()) {
