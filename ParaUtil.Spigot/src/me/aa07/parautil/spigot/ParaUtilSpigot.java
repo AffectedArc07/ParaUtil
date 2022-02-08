@@ -43,7 +43,9 @@ public class ParaUtilSpigot extends JavaPlugin {
 
         /* ===== COMMANDS ===== */
 
-        getCommand("parautil").setExecutor(new ParaUtilCommand(this, configuration_manager, permissions_manager));
+        ParaUtilCommand command = new ParaUtilCommand(this, configuration_manager, database_manager, permissions_manager);
+        getCommand("parautil").setExecutor(command);
+        getCommand("parautil").setTabCompleter(command);
 
 
         long duration = System.currentTimeMillis() - start;

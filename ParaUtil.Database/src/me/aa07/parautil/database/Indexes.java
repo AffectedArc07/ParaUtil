@@ -8,6 +8,7 @@ import javax.annotation.Generated;
 
 import me.aa07.parautil.database.tables.LinkTokens;
 import me.aa07.parautil.database.tables.LinkedAccounts;
+import me.aa07.parautil.database.tables.Players;
 
 import org.jooq.Index;
 import org.jooq.OrderField;
@@ -33,6 +34,7 @@ public class Indexes {
 
     public static final Index LINKED_ACCOUNTS_PRIMARY = Indexes0.LINKED_ACCOUNTS_PRIMARY;
     public static final Index LINK_TOKENS_PRIMARY = Indexes0.LINK_TOKENS_PRIMARY;
+    public static final Index PLAYERS_PRIMARY = Indexes0.PLAYERS_PRIMARY;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
@@ -41,5 +43,6 @@ public class Indexes {
     private static class Indexes0 {
         public static Index LINKED_ACCOUNTS_PRIMARY = Internal.createIndex("PRIMARY", LinkedAccounts.LINKED_ACCOUNTS, new OrderField[] { LinkedAccounts.LINKED_ACCOUNTS.UUID }, true);
         public static Index LINK_TOKENS_PRIMARY = Internal.createIndex("PRIMARY", LinkTokens.LINK_TOKENS, new OrderField[] { LinkTokens.LINK_TOKENS.UUID }, true);
+        public static Index PLAYERS_PRIMARY = Internal.createIndex("PRIMARY", Players.PLAYERS, new OrderField[] { Players.PLAYERS.UUID }, true);
     }
 }
