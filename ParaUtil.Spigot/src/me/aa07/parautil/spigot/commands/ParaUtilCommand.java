@@ -8,6 +8,7 @@ import me.aa07.parautil.database.Tables;
 import me.aa07.parautil.database.tables.records.PlayersRecord;
 import me.aa07.parautil.spigot.ParaUtilSpigot;
 import me.aa07.parautil.spigot.configuration.ConfigurationManager;
+import me.aa07.parautil.spigot.configuration.discord.DiscordManager;
 import me.aa07.parautil.spigot.database.DatabaseManager;
 import me.aa07.parautil.spigot.permissions.PermissionsManager;
 import me.aa07.parautil.spigot.util.F;
@@ -23,12 +24,14 @@ import org.jooq.Result;
 public class ParaUtilCommand implements CommandExecutor, TabCompleter {
     private ConfigurationManager config;
     private DatabaseManager db;
+    private DiscordManager discord;
     private PermissionsManager perms;
     private Properties buildVersion;
 
-    public ParaUtilCommand(ParaUtilSpigot plugin, ConfigurationManager config, DatabaseManager db, PermissionsManager perms) {
+    public ParaUtilCommand(ParaUtilSpigot plugin, ConfigurationManager config, DatabaseManager db, PermissionsManager perms, DiscordManager discord) {
         this.config = config;
         this.db = db;
+        this.discord = discord;
         this.perms = perms;
 
         // Load build properties in this command
@@ -63,6 +66,17 @@ public class ParaUtilCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ChatColor.GOLD + "Commit" + ChatColor.WHITE + " - " + ChatColor.YELLOW + git);
                 sender.sendMessage(ChatColor.GOLD + "Date" + ChatColor.WHITE + " - " + ChatColor.YELLOW + date);
                 sender.sendMessage(ChatColor.GOLD + "User" + ChatColor.WHITE + " - " + ChatColor.YELLOW + user);
+                return true;
+            }
+
+            case "cleardiscordcache": {
+                if ((sender instanceof Player) && !sender.isOp()) {
+                    sender.sendMessage(F.pri("Access Denied"));
+                    return true;
+                }
+
+                discord.clearCache();
+                sender.sendMessage(F.pri("Cleared discord id2ckey cache"));
                 return true;
             }
 
@@ -130,6 +144,7 @@ public class ParaUtilCommand implements CommandExecutor, TabCompleter {
         if (args.length > 0) {
             if (args.length == 1) {
                 List<String> list = new ArrayList<String>();
+                list.add("cleardiscordcache");
                 list.add("lookup");
                 list.add("reload");
                 list.add("version");

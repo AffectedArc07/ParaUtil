@@ -2,6 +2,7 @@ package me.aa07.parautil.spigot.configuration;
 
 import me.aa07.parautil.spigot.ParaUtilSpigot;
 import me.aa07.parautil.spigot.configuration.sections.DatabaseConfiguration;
+import me.aa07.parautil.spigot.configuration.sections.DiscordConfiguration;
 import me.aa07.parautil.spigot.configuration.sections.GeneralConfiguration;
 import me.aa07.parautil.spigot.configuration.sections.PermissionsConfig;
 import me.aa07.parautil.spigot.configuration.sections.WebConfiguration;
@@ -9,6 +10,7 @@ import me.aa07.parautil.spigot.configuration.sections.WebConfiguration;
 public class ConfigurationManager {
     private ParaUtilSpigot plugin;
     public DatabaseConfiguration databaseConfiguration;
+    public DiscordConfiguration discordConfiguration;
     public GeneralConfiguration generalConfiguration;
     public PermissionsConfig permissionsConfig;
     public WebConfiguration webConfiguration;
@@ -21,6 +23,7 @@ public class ConfigurationManager {
         setupDefaults();
         // Add our objects
         databaseConfiguration = new DatabaseConfiguration();
+        discordConfiguration = new DiscordConfiguration();
         generalConfiguration = new GeneralConfiguration();
         permissionsConfig = new PermissionsConfig();
         webConfiguration = new WebConfiguration();
@@ -42,6 +45,13 @@ public class ConfigurationManager {
         plugin.getConfig().addDefault("database.username", "username");
         plugin.getConfig().addDefault("database.password", "password");
         plugin.getConfig().addDefault("database.db", "paradise_mc");
+
+        // Defaults for discord stuff
+        plugin.getConfig().addDefault("discord.enabled", false);
+        plugin.getConfig().addDefault("discord.token", "your_token_here");
+        plugin.getConfig().addDefault("discord.channel", "channel_id_as_string");
+        plugin.getConfig().addDefault("discord.ckeyapiurl", "https://www.paradisestation.org/forum/custom/id2ckey.php");
+        plugin.getConfig().addDefault("discord.ckeyapikey", "some_long_random_string_here");
 
         // Defaults for permissions
         plugin.getConfig().addDefault("permissions.grantednodes", new String[]{"plugin.permissions.*"});
@@ -67,6 +77,13 @@ public class ConfigurationManager {
         databaseConfiguration.username = plugin.getConfig().getString("database.username");
         databaseConfiguration.password = plugin.getConfig().getString("database.password");
         databaseConfiguration.db = plugin.getConfig().getString("database.db");
+
+        // Load discord
+        discordConfiguration.enabled = plugin.getConfig().getBoolean("discord.enabled");
+        discordConfiguration.token = plugin.getConfig().getString("discord.token");
+        discordConfiguration.channel = plugin.getConfig().getString("discord.channel");
+        discordConfiguration.ckeyApiUrl = plugin.getConfig().getString("discord.ckeyapiurl");
+        discordConfiguration.ckeyApiKey = plugin.getConfig().getString("discord.ckeyapikey");
 
         // Load permissions
         permissionsConfig.adminPermissions = plugin.getConfig().getStringList("permissions.grantednodes");
