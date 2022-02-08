@@ -12,6 +12,7 @@ import javax.annotation.Generated;
 
 import me.aa07.parautil.database.tables.LinkTokens;
 import me.aa07.parautil.database.tables.LinkedAccounts;
+import me.aa07.parautil.database.tables.Players;
 
 import org.jooq.Catalog;
 import org.jooq.Table;
@@ -31,7 +32,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ParadiseMc extends SchemaImpl {
 
-    private static final long serialVersionUID = -293540959;
+    private static final long serialVersionUID = -982407832;
 
     /**
      * The reference instance of <code>paradise_mc</code>
@@ -47,6 +48,11 @@ public class ParadiseMc extends SchemaImpl {
      * The table <code>paradise_mc.link_tokens</code>.
      */
     public final LinkTokens LINK_TOKENS = me.aa07.parautil.database.tables.LinkTokens.LINK_TOKENS;
+
+    /**
+     * The table <code>paradise_mc.players</code>.
+     */
+    public final Players PLAYERS = me.aa07.parautil.database.tables.Players.PLAYERS;
 
     /**
      * No further instances allowed
@@ -74,6 +80,7 @@ public class ParadiseMc extends SchemaImpl {
     private final List<Table<?>> getTables0() {
         return Arrays.<Table<?>>asList(
             LinkedAccounts.LINKED_ACCOUNTS,
-            LinkTokens.LINK_TOKENS);
+            LinkTokens.LINK_TOKENS,
+            Players.PLAYERS);
     }
 }

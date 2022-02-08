@@ -30,8 +30,7 @@ public class PermissionsManager implements Listener {
         admins = new HashSet<Player>();
 
         // ADD ALL PERMISSIONS THIS PLUGIN USES
-        // Use this if you ever add commands to this plugin
-        // Bukkit.getPluginManager().addPermission(new Permission("parautil.admin"));
+        Bukkit.getPluginManager().addPermission(new Permission("parautil.lookup"));
 
         plugin.getLogger().info("[PermissionsManager] Loaded");
     }

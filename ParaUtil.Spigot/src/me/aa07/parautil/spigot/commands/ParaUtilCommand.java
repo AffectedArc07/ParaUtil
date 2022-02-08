@@ -1,24 +1,34 @@
 package me.aa07.parautil.spigot.commands;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import me.aa07.parautil.database.Tables;
+import me.aa07.parautil.database.tables.records.PlayersRecord;
 import me.aa07.parautil.spigot.ParaUtilSpigot;
 import me.aa07.parautil.spigot.configuration.ConfigurationManager;
+import me.aa07.parautil.spigot.database.DatabaseManager;
 import me.aa07.parautil.spigot.permissions.PermissionsManager;
 import me.aa07.parautil.spigot.util.F;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.jooq.Result;
 
-public class ParaUtilCommand implements CommandExecutor {
+public class ParaUtilCommand implements CommandExecutor, TabCompleter {
     private ConfigurationManager config;
+    private DatabaseManager db;
     private PermissionsManager perms;
     private Properties buildVersion;
 
-    public ParaUtilCommand(ParaUtilSpigot plugin, ConfigurationManager config, PermissionsManager perms) {
+    public ParaUtilCommand(ParaUtilSpigot plugin, ConfigurationManager config, DatabaseManager db, PermissionsManager perms) {
         this.config = config;
+        this.db = db;
         this.perms = perms;
 
         // Load build properties in this command
@@ -37,8 +47,9 @@ public class ParaUtilCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
             sender.sendMessage(F.pri("Command help"));
-            sender.sendMessage(ChatColor.GOLD + "/parautil version" + ChatColor.WHITE + " - " + ChatColor.YELLOW + "Gets the plugin version");
+            sender.sendMessage(ChatColor.GOLD + "/parautil lookup <mcname>" + ChatColor.WHITE + " - " + ChatColor.YELLOW + "Performs a lookup on an MC username [Requires Admin]");
             sender.sendMessage(ChatColor.GOLD + "/parautil reload" + ChatColor.WHITE + " - " + ChatColor.YELLOW + "Reloads config & permissions");
+            sender.sendMessage(ChatColor.GOLD + "/parautil version" + ChatColor.WHITE + " - " + ChatColor.YELLOW + "Gets the plugin version");
             return true;
         }
 
@@ -67,13 +78,60 @@ public class ParaUtilCommand implements CommandExecutor {
                 return true;
             }
 
+            case "lookup": {
+                if (!sender.hasPermission("parautil.lookup")) {
+                    sender.sendMessage(F.pri("Access Denied"));
+                    return true;
+                }
+
+                if (args.length < 2) {
+                    sender.sendMessage(F.pri("Usage: " + ChatColor.GOLD + "/parautil lookup <mcusername>"));
+                    return true;
+                }
+
+                handleLookup(sender, args[1]);
+                return true;
+            }
+
             default: {
                 sender.sendMessage(F.pri("Error", "Unrecognized subcommand"));
-                break;
+                return true;
             }
         }
-
-        return false;
     }
 
+    private void handleLookup(CommandSender sender, String target) {
+        // See if they exist
+        if (!db.jooq().fetchExists(db.jooq().selectFrom(Tables.PLAYERS).where(Tables.PLAYERS.LAST_USERNAME.eq(target)))) {
+            sender.sendMessage(F.pri("Player " + F.item(target) + " has not joined the server."));
+            return;
+        }
+
+        Result<PlayersRecord> db_result = db.jooq().selectFrom(Tables.PLAYERS).where(Tables.PLAYERS.LAST_USERNAME.eq(target)).fetch();
+        if (db_result.size() > 1) {
+            sender.sendMessage(F.pri("Warning: Mutiple players returned"));
+        }
+
+        for (PlayersRecord record : db_result) {
+            sender.sendMessage(F.pri("Info on " + F.item(record.getLastUsername())));
+            sender.sendMessage(ChatColor.GOLD + "UUID" + ChatColor.WHITE + " - " + ChatColor.YELLOW + record.getUuid());
+            sender.sendMessage(ChatColor.GOLD + "Ckey" + ChatColor.WHITE + " - " + ChatColor.YELLOW + record.getLastCkey());
+            sender.sendMessage(ChatColor.GOLD + "First Seen" + ChatColor.WHITE + " - " + ChatColor.YELLOW + record.getFirstSeen());
+            sender.sendMessage(ChatColor.GOLD + "Last Seen" + ChatColor.WHITE + " - " + ChatColor.YELLOW + record.getLastSeen());
+        }
+
+    }
+
+    // Provide tab completion on lookups
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String string, String[] args) {
+        if (cmd.getName().equalsIgnoreCase("parautil") && args.length > 1 && args[0].equals("lookup")) {
+            List<String> list = new ArrayList<String>();
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                list.add(p.getName());
+            }
+            return list;
+        }
+        return null;
+    }
 }

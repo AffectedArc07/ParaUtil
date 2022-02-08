@@ -8,6 +8,7 @@ import javax.annotation.Generated;
 
 import me.aa07.parautil.database.tables.LinkTokens;
 import me.aa07.parautil.database.tables.LinkedAccounts;
+import me.aa07.parautil.database.tables.Players;
 
 
 /**
@@ -32,4 +33,9 @@ public class Tables {
      * The table <code>paradise_mc.link_tokens</code>.
      */
     public static final LinkTokens LINK_TOKENS = me.aa07.parautil.database.tables.LinkTokens.LINK_TOKENS;
+
+    /**
+     * The table <code>paradise_mc.players</code>.
+     */
+    public static final Players PLAYERS = me.aa07.parautil.database.tables.Players.PLAYERS;
 }

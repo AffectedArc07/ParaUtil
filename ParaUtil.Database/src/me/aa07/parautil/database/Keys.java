@@ -8,8 +8,10 @@ import javax.annotation.Generated;
 
 import me.aa07.parautil.database.tables.LinkTokens;
 import me.aa07.parautil.database.tables.LinkedAccounts;
+import me.aa07.parautil.database.tables.Players;
 import me.aa07.parautil.database.tables.records.LinkTokensRecord;
 import me.aa07.parautil.database.tables.records.LinkedAccountsRecord;
+import me.aa07.parautil.database.tables.records.PlayersRecord;
 
 import org.jooq.UniqueKey;
 import org.jooq.impl.Internal;
@@ -40,6 +42,7 @@ public class Keys {
 
     public static final UniqueKey<LinkedAccountsRecord> KEY_LINKED_ACCOUNTS_PRIMARY = UniqueKeys0.KEY_LINKED_ACCOUNTS_PRIMARY;
     public static final UniqueKey<LinkTokensRecord> KEY_LINK_TOKENS_PRIMARY = UniqueKeys0.KEY_LINK_TOKENS_PRIMARY;
+    public static final UniqueKey<PlayersRecord> KEY_PLAYERS_PRIMARY = UniqueKeys0.KEY_PLAYERS_PRIMARY;
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
@@ -53,5 +56,6 @@ public class Keys {
     private static class UniqueKeys0 {
         public static final UniqueKey<LinkedAccountsRecord> KEY_LINKED_ACCOUNTS_PRIMARY = Internal.createUniqueKey(LinkedAccounts.LINKED_ACCOUNTS, "KEY_linked_accounts_PRIMARY", LinkedAccounts.LINKED_ACCOUNTS.UUID);
         public static final UniqueKey<LinkTokensRecord> KEY_LINK_TOKENS_PRIMARY = Internal.createUniqueKey(LinkTokens.LINK_TOKENS, "KEY_link_tokens_PRIMARY", LinkTokens.LINK_TOKENS.UUID);
+        public static final UniqueKey<PlayersRecord> KEY_PLAYERS_PRIMARY = Internal.createUniqueKey(Players.PLAYERS, "KEY_players_PRIMARY", Players.PLAYERS.UUID);
     }
 }
