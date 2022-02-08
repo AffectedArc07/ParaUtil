@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.Random;
 import me.aa07.parautil.database.Tables;
 import me.aa07.parautil.database.tables.records.LinkTokensRecord;
@@ -20,6 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -31,12 +33,19 @@ public class LoginManager implements Listener {
     private DatabaseManager db;
     private PermissionsManager perms;
 
+    private HashMap<Player, String> player2ckeyMap;
+
     public LoginManager(ParaUtilSpigot plugin, ConfigurationManager config, DatabaseManager db, PermissionsManager perms) {
         this.config = config;
         this.db = db;
         this.perms = perms;
+        player2ckeyMap = new HashMap<Player, String>();
         Bukkit.getPluginManager().registerEvents(this, plugin);
         plugin.getLogger().info("[LoginManager] Loaded");
+    }
+
+    public String ckey(Player player) {
+        return player2ckeyMap.get(player);
     }
 
     /*
@@ -145,6 +154,8 @@ public class LoginManager implements Listener {
 
             // Set their displayname to their ckey
             event.getPlayer().setDisplayName(lm.ckey);
+            player2ckeyMap.put(event.getPlayer(), lm.ckey);
+
             // Log info
             logPlayerToDb(event.getPlayer(), lm.ckey);
 
@@ -200,14 +211,15 @@ public class LoginManager implements Listener {
     }
 
     // Set just their lastseen on disconnect
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerQuit(PlayerQuitEvent event) {
+        // Clear them out
+        player2ckeyMap.remove(event.getPlayer());
+
         // Get them
         PlayersRecord record = db.jooq().selectFrom(Tables.PLAYERS).where(Tables.PLAYERS.UUID.eq(event.getPlayer().getUniqueId().toString())).fetchOne();
-
         // Update
         record.setLastSeen(db.now());
-
         // Save
         record.store();
     }

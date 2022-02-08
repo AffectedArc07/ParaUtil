@@ -2,6 +2,7 @@ package me.aa07.parautil.spigot;
 
 import me.aa07.parautil.spigot.commands.ParaUtilCommand;
 import me.aa07.parautil.spigot.configuration.ConfigurationManager;
+import me.aa07.parautil.spigot.configuration.discord.DiscordManager;
 import me.aa07.parautil.spigot.database.DatabaseManager;
 import me.aa07.parautil.spigot.login.LoginManager;
 import me.aa07.parautil.spigot.permissions.PermissionsManager;
@@ -27,13 +28,13 @@ public class ParaUtilSpigot extends JavaPlugin {
         // Setup PermissionsManagaer
         PermissionsManager permissions_manager = new PermissionsManager(this, configuration_manager);
 
-        // Setup VersionManager
+        // Setup LoginManager
+        LoginManager login_manager = new LoginManager(this, configuration_manager, database_manager, permissions_manager);
 
+        // Setup DiscordManager
+        DiscordManager discord_manager = new DiscordManager(this, configuration_manager, login_manager);
 
         /* ===== NON REFERENCED MODULES ===== */
-
-        // Setup LoginManager
-        new LoginManager(this, configuration_manager, database_manager, permissions_manager);
 
         // Setup PingManager
         new PingManager(this);
@@ -43,7 +44,7 @@ public class ParaUtilSpigot extends JavaPlugin {
 
         /* ===== COMMANDS ===== */
 
-        ParaUtilCommand command = new ParaUtilCommand(this, configuration_manager, database_manager, permissions_manager);
+        ParaUtilCommand command = new ParaUtilCommand(this, configuration_manager, database_manager, permissions_manager, discord_manager);
         getCommand("parautil").setExecutor(command);
         getCommand("parautil").setTabCompleter(command);
 
