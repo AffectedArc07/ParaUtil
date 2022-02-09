@@ -28,7 +28,7 @@ public class DiscordBot implements MessageCreateListener {
     }
 
     public void sendChatMessage(String author, String message) {
-        if (message.contains("@everyone") || message.contains("@here")) {
+        if (message.contains("@")) {
             return; // Dont even try
         }
 
