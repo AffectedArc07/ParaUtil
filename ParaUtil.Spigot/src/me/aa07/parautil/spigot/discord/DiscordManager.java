@@ -136,6 +136,6 @@ public class DiscordManager implements Listener {
             return; // Null
         }
 
-        Bukkit.broadcastMessage(String.format("%s[%sDiscord%s - %s%s%s] %s", ChatColor.WHITE, ChatColor.AQUA, ChatColor.WHITE, ChatColor.LIGHT_PURPLE, speaking_ckey, ChatColor.WHITE, message));
+        Bukkit.broadcastMessage(String.format("%sDiscord %s%s %s%s", ChatColor.AQUA, ChatColor.GRAY, speaking_ckey, ChatColor.WHITE, message));
     }
 }
