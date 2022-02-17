@@ -146,15 +146,28 @@ public class LoginManager implements Listener {
 
             // If we are here we can login
 
+            perms.addAttachment(event.getPlayer());
+
             // If they are an admin, mark them as so
             if (lm.isAdmin) {
-                perms.addAttachment(event.getPlayer());
                 perms.grantAdminPermissions(event.getPlayer());
             }
 
+            // Add player (and optionally admin perms)
+            perms.refreshPermissions(event.getPlayer());
+
+            // Set them up with the ChatManager
+            ChatColor target_colour = ChatColor.GRAY;
+            if (config.chatConfiguration.rankMap.containsKey(String.valueOf(lm.groupId))) {
+                target_colour = config.chatConfiguration.rankMap.get(String.valueOf(lm.groupId));
+            }
+
+
             // Set their displayname to their ckey
-            event.getPlayer().setDisplayName(lm.ckey);
+            event.getPlayer().setDisplayName(target_colour + lm.ckey);
             player2ckeyMap.put(event.getPlayer(), lm.ckey);
+
+            //chat.setupPlayer(event.getPlayer(), target_colour);
 
             // Log info
             logPlayerToDb(event.getPlayer(), lm.ckey);

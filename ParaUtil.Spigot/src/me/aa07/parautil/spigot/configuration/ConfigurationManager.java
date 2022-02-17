@@ -1,14 +1,19 @@
 package me.aa07.parautil.spigot.configuration;
 
+import java.util.HashMap;
+import java.util.Set;
 import me.aa07.parautil.spigot.ParaUtilSpigot;
+import me.aa07.parautil.spigot.configuration.sections.ChatConfiguration;
 import me.aa07.parautil.spigot.configuration.sections.DatabaseConfiguration;
 import me.aa07.parautil.spigot.configuration.sections.DiscordConfiguration;
 import me.aa07.parautil.spigot.configuration.sections.GeneralConfiguration;
 import me.aa07.parautil.spigot.configuration.sections.PermissionsConfig;
 import me.aa07.parautil.spigot.configuration.sections.WebConfiguration;
+import org.bukkit.ChatColor;
 
 public class ConfigurationManager {
     private ParaUtilSpigot plugin;
+    public ChatConfiguration chatConfiguration;
     public DatabaseConfiguration databaseConfiguration;
     public DiscordConfiguration discordConfiguration;
     public GeneralConfiguration generalConfiguration;
@@ -22,6 +27,7 @@ public class ConfigurationManager {
         // Setup defaults in the plugin config
         setupDefaults();
         // Add our objects
+        chatConfiguration = new ChatConfiguration();
         databaseConfiguration = new DatabaseConfiguration();
         discordConfiguration = new DiscordConfiguration();
         generalConfiguration = new GeneralConfiguration();
@@ -39,6 +45,12 @@ public class ConfigurationManager {
         // General defaults
         plugin.getConfig().addDefault("general.devmode", true);
 
+        // Defaults for chat
+        plugin.getConfig().addDefault("chat.group_colours", new HashMap<String, String>() {{
+                put("4", "GREEN");
+            }
+        });
+
         // Defaults for the database
         plugin.getConfig().addDefault("database.enabled", false);
         plugin.getConfig().addDefault("database.host", "10.0.0.10:3306");
@@ -54,7 +66,8 @@ public class ConfigurationManager {
         plugin.getConfig().addDefault("discord.ckeyapikey", "some_long_random_string_here");
 
         // Defaults for permissions
-        plugin.getConfig().addDefault("permissions.grantednodes", new String[]{"plugin.permissions.*"});
+        plugin.getConfig().addDefault("permissions.admin_nodes", new String[]{"plugin.permissions.*"});
+        plugin.getConfig().addDefault("permissions.player_nodes", new String[]{"plugin.permissions.*"});
 
         // Defaults for the web API
         plugin.getConfig().addDefault("web.apihost", "https://www.paradisestation.org/forum/custom/mc.php");
@@ -71,6 +84,30 @@ public class ConfigurationManager {
         // Load general
         generalConfiguration.devmode = plugin.getConfig().getBoolean("general.devmode");
 
+        // Load Chat
+        Set<String> keys = plugin.getConfig().getConfigurationSection("chat.group_colours").getKeys(true);
+
+        for (String key : keys) {
+            String value = plugin.getConfig().getString(String.format("chat.group_colours.%s", key));
+            if (value == null) {
+                plugin.getLogger().warning(String.format("[ConfigurationManager] Chat group colours configuration specified an invalid colour for group %s (null)", key));
+                continue;
+            }
+
+            ChatColor target_colour = null;
+            try {
+                target_colour = ChatColor.valueOf(value);
+            } catch (IllegalArgumentException exception) {
+                plugin.getLogger().warning(String.format("[ConfigurationManager] Chat group colours configuration specified an invalid colour for group %s (%s)", key, value));
+                exception.printStackTrace();
+                continue;
+            }
+
+            chatConfiguration.rankMap.put(key, target_colour);
+        }
+
+        plugin.getLogger().info(String.format("[ConfigurationManager] Loaded %s rank colours from config", chatConfiguration.rankMap.size()));
+
         // Load DB
         databaseConfiguration.enabled = plugin.getConfig().getBoolean("database.enabled");
         databaseConfiguration.host = plugin.getConfig().getString("database.host");
@@ -86,8 +123,10 @@ public class ConfigurationManager {
         discordConfiguration.ckeyApiKey = plugin.getConfig().getString("discord.ckeyapikey");
 
         // Load permissions
-        permissionsConfig.adminPermissions = plugin.getConfig().getStringList("permissions.grantednodes");
-        plugin.getLogger().info(String.format("[ConfigurationManager] Loaded %s permissions from config", permissionsConfig.adminPermissions.size()));
+        permissionsConfig.playerPermissions = plugin.getConfig().getStringList("permissions.player_nodes");
+        plugin.getLogger().info(String.format("[ConfigurationManager] Loaded %s player permissions from config", permissionsConfig.playerPermissions.size()));
+        permissionsConfig.adminPermissions = plugin.getConfig().getStringList("permissions.admin_nodes");
+        plugin.getLogger().info(String.format("[ConfigurationManager] Loaded %s admin permissions from config", permissionsConfig.adminPermissions.size()));
 
         // Load web
         webConfiguration.apiHost = plugin.getConfig().getString("web.apihost");

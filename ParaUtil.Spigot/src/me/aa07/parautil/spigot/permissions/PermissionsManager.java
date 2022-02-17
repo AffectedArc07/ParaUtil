@@ -38,28 +38,37 @@ public class PermissionsManager implements Listener {
     // Called from LoginMananger
     public void grantAdminPermissions(Player player) {
         admins.add(player);
-        refreshPermissions(player);
     }
 
     // Called from the reload command
     public void refreshAll() {
-        for (Player player : admins) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             refreshPermissions(player);
         }
     }
 
-    private void refreshPermissions(Player player) {
+    public void refreshPermissions(Player player) {
         PermissionAttachment pa = attachments.get(player);
         // Remove all old
         for (String perm : pa.getPermissions().keySet()) {
             pa.unsetPermission(perm);
         }
 
-        // Add new
-        for (String config_perm : config.adminPermissions) {
+        // Add regular permissions
+        for (String config_perm : config.playerPermissions) {
             List<String> perms = calculatePermissions(config_perm);
             for (String perm : perms) {
                 pa.setPermission(perm, true);
+            }
+        }
+
+        // Add new admin permissions
+        if (admins.contains(player)) {
+            for (String config_perm : config.adminPermissions) {
+                List<String> perms = calculatePermissions(config_perm);
+                for (String perm : perms) {
+                    pa.setPermission(perm, true);
+                }
             }
         }
     }

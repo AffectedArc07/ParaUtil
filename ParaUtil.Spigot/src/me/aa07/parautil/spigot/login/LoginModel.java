@@ -6,4 +6,5 @@ public class LoginModel {
     public String reason;
     public String ckey;
     public boolean isAdmin;
+    public int groupId;
 }
