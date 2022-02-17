@@ -45,6 +45,11 @@ public class ConfigurationManager {
         // General defaults
         plugin.getConfig().addDefault("general.devmode", true);
 
+        plugin.getConfig().addDefault("general.force_allowed_users", new HashMap<String, String>() {{
+                put("14b61d59-f16b-4763-836d-a65fa88c6641", "affectedarc07");
+            }
+        });
+
         // Defaults for chat
         plugin.getConfig().addDefault("chat.group_colours", new HashMap<String, String>() {{
                 put("4", "GREEN");
@@ -84,10 +89,24 @@ public class ConfigurationManager {
         // Load general
         generalConfiguration.devmode = plugin.getConfig().getBoolean("general.devmode");
 
-        // Load Chat
-        Set<String> keys = plugin.getConfig().getConfigurationSection("chat.group_colours").getKeys(true);
+        Set<String> keys = plugin.getConfig().getConfigurationSection("general.force_allowed_users").getKeys(false);
 
         for (String key : keys) {
+            String value = plugin.getConfig().getString(String.format("general.force_allowed_users.%s", key));
+            if (value == null) {
+                plugin.getLogger().warning(String.format("[ConfigurationManager] General force allowed users configuration specified an invalid ckey for UUID %s (null)", key));
+                continue;
+            }
+
+            generalConfiguration.userMap.put(key, value);
+        }
+
+        plugin.getLogger().info(String.format("[ConfigurationManager] Loaded %s user bypasses from config", generalConfiguration.userMap.size()));
+
+        // Load Chat
+        Set<String> keys2 = plugin.getConfig().getConfigurationSection("chat.group_colours").getKeys(false);
+
+        for (String key : keys2) {
             String value = plugin.getConfig().getString(String.format("chat.group_colours.%s", key));
             if (value == null) {
                 plugin.getLogger().warning(String.format("[ConfigurationManager] Chat group colours configuration specified an invalid colour for group %s (null)", key));

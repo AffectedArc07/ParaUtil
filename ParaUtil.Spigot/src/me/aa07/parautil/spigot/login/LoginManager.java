@@ -79,6 +79,21 @@ public class LoginManager implements Listener {
             return;
         }
 
+        if (config.generalConfiguration.userMap.containsKey(event.getPlayer().getUniqueId().toString())) {
+            // This user is in the bypass list. Skip everything else.
+            perms.addAttachment(event.getPlayer());
+            perms.refreshPermissions(event.getPlayer());
+
+            // Set their displayname to their ckey
+            String ckey = config.generalConfiguration.userMap.get(event.getPlayer().getUniqueId().toString());
+            event.getPlayer().setDisplayName(ChatColor.GRAY + ckey);
+            player2ckeyMap.put(event.getPlayer(), ckey);
+
+            // Log info
+            logPlayerToDb(event.getPlayer(), ckey);
+            return;
+        }
+
         // Wrap all this in try/catch
         try {
             if (!db.jooq().fetchExists(db.jooq().select(Tables.LINKED_ACCOUNTS.FUID).from(Tables.LINKED_ACCOUNTS).where(Tables.LINKED_ACCOUNTS.UUID.eq(event.getPlayer().getUniqueId().toString())))) {
@@ -166,8 +181,6 @@ public class LoginManager implements Listener {
             // Set their displayname to their ckey
             event.getPlayer().setDisplayName(target_colour + lm.ckey);
             player2ckeyMap.put(event.getPlayer(), lm.ckey);
-
-            //chat.setupPlayer(event.getPlayer(), target_colour);
 
             // Log info
             logPlayerToDb(event.getPlayer(), lm.ckey);
