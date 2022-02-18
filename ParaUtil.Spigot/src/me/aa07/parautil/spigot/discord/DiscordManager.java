@@ -8,21 +8,22 @@ import java.net.URL;
 import java.util.HashMap;
 import me.aa07.parautil.spigot.ParaUtilSpigot;
 import me.aa07.parautil.spigot.configuration.ConfigurationManager;
-import me.aa07.parautil.spigot.configuration.sections.DiscordConfiguration;
 import me.aa07.parautil.spigot.login.LoginManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 // This holds the actual management and interfacing with the discord bot and bukkit
 public class DiscordManager implements Listener {
     private ParaUtilSpigot plugin;
-    private DiscordConfiguration config;
+    private ConfigurationManager config;
     private LoginManager loginManager;
     private Object startupLock;
     private DiscordBot bot;
@@ -32,13 +33,13 @@ public class DiscordManager implements Listener {
 
     public DiscordManager(ParaUtilSpigot plugin, ConfigurationManager config, LoginManager loginManager) {
         this.plugin = plugin;
-        this.config = config.discordConfiguration;
+        this.config = config;
         this.loginManager = loginManager;
 
         startupLock = new Object();
         id2ckeyMap = new HashMap<Long, String>();
 
-        if (!this.config.enabled) {
+        if (!this.config.discordConfiguration.enabled) {
             plugin.getLogger().info("[DiscordManager] Discord bot not enabled in config");
             return;
         }
@@ -58,7 +59,14 @@ public class DiscordManager implements Listener {
         }
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
+        bot.sendMessage("✅ Server Started");
         plugin.getLogger().info("[DiscordManager] Ready!");
+    }
+
+    public void sendShutdown() {
+        if (config.discordConfiguration.enabled) {
+            bot.sendMessage("❎ Server Stopped");
+        }
     }
 
     @EventHandler
@@ -68,12 +76,21 @@ public class DiscordManager implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onJoin(PlayerJoinEvent event) {
-        bot.sendRaw(String.format("▶ `%s` joined", loginManager.ckey(event.getPlayer())));
+        bot.sendMessage(String.format("▶ `%s` joined", loginManager.ckey(event.getPlayer())));
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onQuit(PlayerQuitEvent event) {
-        bot.sendRaw(String.format("◀ `%s` left", loginManager.ckey(event.getPlayer())));
+        bot.sendMessage(String.format("◀ `%s` left", loginManager.ckey(event.getPlayer())));
+    }
+
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        String message = event.getDeathMessage();
+        String playername = event.getEntity().getDisplayName();
+        message = message.replace(playername, String.format("`%s`", playername)); // Encase the playername in a formatting block
+        message = ChatColor.stripColor(message); // Strip out §
+        bot.sendMessage(String.format("💀 %s", message));
     }
 
     // This is launched in a thread. DO NOT CALL THIS OUTSIDE OF A CUSTOM THREAD
@@ -99,7 +116,7 @@ public class DiscordManager implements Listener {
         // First see if we have their ID caches
         if (!id2ckeyMap.containsKey(sourceId)) {
             // Get their ckey from their ID
-            String request_url = String.format("%s?k=%s&i=%s", config.ckeyApiUrl, config.ckeyApiKey, sourceId);
+            String request_url = String.format("%s?k=%s&i=%s", config.discordConfiguration.ckeyApiUrl, config.discordConfiguration.ckeyApiKey, sourceId);
             try {
                 URL url = new URL(request_url);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();

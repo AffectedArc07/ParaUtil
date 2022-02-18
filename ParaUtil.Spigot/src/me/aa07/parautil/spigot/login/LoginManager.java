@@ -203,37 +203,30 @@ public class LoginManager implements Listener {
 
     // Updates player name, ckey and lastseen time in the DB
     private void logPlayerToDb(Player player, String ckey) {
+        PlayersRecord record;
+
         // See if they exist first
         if (db.jooq().fetchExists(db.jooq().select(Tables.PLAYERS.UUID).from(Tables.PLAYERS).where(Tables.PLAYERS.UUID.eq(player.getUniqueId().toString())))) {
-            // They do
-
-            // Get them
-            PlayersRecord record = db.jooq().selectFrom(Tables.PLAYERS).where(Tables.PLAYERS.UUID.eq(player.getUniqueId().toString())).fetchOne();
-
-            // Update
-            record.setLastUsername(player.getName());
-            record.setLastCkey(ckey);
-            record.setLastSeen(db.now());
-
-            // Save
-            record.store();
-
+            // They do, get them
+            record = db.jooq().selectFrom(Tables.PLAYERS).where(Tables.PLAYERS.UUID.eq(player.getUniqueId().toString())).fetchOne();
         } else {
-            // They dont
-
-            // Make a record
-            PlayersRecord record = db.jooq().newRecord(Tables.PLAYERS);
+            // They dont, make a record
+            record = db.jooq().newRecord(Tables.PLAYERS);
 
             // Set everything
             record.setUuid(player.getUniqueId().toString());
-            record.setLastUsername(player.getName());
-            record.setLastCkey(ckey);
             record.setFirstSeen(db.now());
-            record.setLastSeen(db.now());
-
-            // Save
-            record.store();
         }
+
+        // Update
+        record.setLastUsername(player.getName());
+        record.setLastCkey(ckey);
+        record.setLastServer(config.generalConfiguration.serverId);
+        record.setLastSeen(db.now());
+
+        // Save
+        record.store();
+
     }
 
     // Set just their lastseen on disconnect

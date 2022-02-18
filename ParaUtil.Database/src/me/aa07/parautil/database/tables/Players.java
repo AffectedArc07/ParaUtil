@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Players extends TableImpl<PlayersRecord> {
 
-    private static final long serialVersionUID = -373725140;
+    private static final long serialVersionUID = 1486311086;
 
     /**
      * The reference instance of <code>paradise_mc.players</code>
@@ -70,6 +70,11 @@ public class Players extends TableImpl<PlayersRecord> {
      * The column <code>paradise_mc.players.last_ckey</code>.
      */
     public final TableField<PlayersRecord, String> LAST_CKEY = createField("last_ckey", org.jooq.impl.SQLDataType.VARCHAR(32).nullable(false), this, "");
+
+    /**
+     * The column <code>paradise_mc.players.last_server</code>.
+     */
+    public final TableField<PlayersRecord, String> LAST_SERVER = createField("last_server", org.jooq.impl.SQLDataType.VARCHAR(50).defaultValue(org.jooq.impl.DSL.inline("NULL", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>paradise_mc.players.first_seen</code>.

@@ -11,6 +11,8 @@ import me.aa07.parautil.spigot.tablist.TablistManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class ParaUtilSpigot extends JavaPlugin {
+    // We need this in shutdown
+    private DiscordManager discordManager;
 
     @Override
     public void onEnable() {
@@ -32,7 +34,7 @@ public class ParaUtilSpigot extends JavaPlugin {
         LoginManager login_manager = new LoginManager(this, configuration_manager, database_manager, permissions_manager);
 
         // Setup DiscordManager
-        DiscordManager discord_manager = new DiscordManager(this, configuration_manager, login_manager);
+        discordManager = new DiscordManager(this, configuration_manager, login_manager);
 
         /* ===== NON REFERENCED MODULES ===== */
 
@@ -44,12 +46,17 @@ public class ParaUtilSpigot extends JavaPlugin {
 
         /* ===== COMMANDS ===== */
 
-        ParaUtilCommand command = new ParaUtilCommand(this, configuration_manager, database_manager, permissions_manager, discord_manager);
+        ParaUtilCommand command = new ParaUtilCommand(this, configuration_manager, database_manager, permissions_manager, discordManager);
         getCommand("parautil").setExecutor(command);
         getCommand("parautil").setTabCompleter(command);
 
 
         long duration = System.currentTimeMillis() - start;
         getLogger().info(String.format("[Core] Enabled in %sms", duration));
+    }
+
+    @Override
+    public void onDisable() {
+        discordManager.sendShutdown();
     }
 }

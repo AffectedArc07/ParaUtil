@@ -44,6 +44,7 @@ public class ConfigurationManager {
     private void setupDefaults() {
         // General defaults
         plugin.getConfig().addDefault("general.devmode", true);
+        plugin.getConfig().addDefault("general.server_id", "aa_testing");
 
         plugin.getConfig().addDefault("general.force_allowed_users", new HashMap<String, String>() {{
                 put("14b61d59-f16b-4763-836d-a65fa88c6641", "affectedarc07");
@@ -88,6 +89,7 @@ public class ConfigurationManager {
     public void loadConfig() {
         // Load general
         generalConfiguration.devmode = plugin.getConfig().getBoolean("general.devmode");
+        generalConfiguration.serverId = plugin.getConfig().getString("general.server_id");
 
         Set<String> keys = plugin.getConfig().getConfigurationSection("general.force_allowed_users").getKeys(false);
 
