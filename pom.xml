@@ -27,10 +27,6 @@
             <id>bungee-repo</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
-        <repository>
-            <id>aa07_parautil_read</id>
-            <url>https://mocha.affectedarc07.co.uk/repo/repository/parautil/</url>
-        </repository>
     </repositories>
 
     <dependencyManagement>
